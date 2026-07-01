@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+build/
+.gradle/
+*.class
+*.jar
+.env
+.env.local
+.claude/

@@ -1,0 +1,35 @@
+import { StyleSheet } from "react-native";
+import { Colors } from "./shared";
+
+export default (c: Colors) =>
+  StyleSheet.create({
+    tooltip: {
+      position: "fixed" as any,
+      width: 300,
+      backgroundColor: c.bgCard,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: c.border,
+      padding: 14,
+      zIndex: 9999,
+      // web shadow
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.18,
+      shadowRadius: 16,
+    },
+    name: {
+      color: c.textPrimary,
+      fontWeight: "700",
+      fontSize: 13,
+      marginBottom: 8,
+    },
+    body: {
+      color: c.textSecondary,
+      fontSize: 13,
+      lineHeight: 20,
+    },
+    link: {
+      fontWeight: "600",
+    },
+  });

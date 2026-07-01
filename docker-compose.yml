@@ -1,0 +1,80 @@
+services:
+    db:
+        profiles: [prod, dev]
+        image: postgres:16-alpine
+        container_name: objetivisa-db
+        environment:
+            POSTGRES_DB: objetivisa
+            POSTGRES_USER: objetivisa
+            POSTGRES_PASSWORD: objetivisa
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "3002:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U objetivisa"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        profiles: [prod]
+        build: ./backend
+        container_name: objetivisa-api
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/objetivisa
+            SPRING_DATASOURCE_USERNAME: objetivisa
+            SPRING_DATASOURCE_PASSWORD: objetivisa
+        ports:
+            - "3001:3001"
+        depends_on:
+            db:
+                condition: service_healthy
+
+    frontend:
+        profiles: [prod]
+        build: ./frontend
+        container_name: objetivisa-web
+        ports:
+            - "3000:80"
+        depends_on:
+            - backend
+
+    frontend-dev:
+        profiles: [dev]
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        container_name: objetivisa-web-dev
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        ports:
+            - "3000:8081"
+        environment:
+            - REACT_NATIVE_PACKAGER_HOSTNAME=localhost
+
+    backend-dev:
+        profiles: [dev]
+        image: maven:3.9-eclipse-temurin-21
+        container_name: objetivisa-api-dev
+        working_dir: /app
+        volumes:
+            - ./backend:/app
+            - maven-cache:/root/.m2
+            - backend-target:/app/target
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/objetivisa
+            SPRING_DATASOURCE_USERNAME: objetivisa
+            SPRING_DATASOURCE_PASSWORD: objetivisa
+        ports:
+            - "3001:3001"
+        depends_on:
+            db:
+                condition: service_healthy
+        command: mvn spring-boot:run
+
+volumes:
+    postgres_data:
+    maven-cache:
+    backend-target:
