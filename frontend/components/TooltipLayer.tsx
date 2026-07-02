@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { useTooltipContext } from "../contexts/TooltipContext";
-import { CONCEPTS } from "../data_types/concepts";
+import { useConcepts } from "../contexts/ConceptsContext";
 import { ConceptText } from "./ConceptText";
 import { useStyles } from "../hooks/useStyles";
 import makeStyles from "../styles/ConceptTooltip.styles";
@@ -13,9 +13,10 @@ function ConceptTooltip({
   y: number;
   depth: number;
 }) {
-  const { onEnterTooltip, onLeaveTooltip } = useTooltipContext();
+  const { onEnterTooltip, onLeaveTooltip, keepAlive } = useTooltipContext();
+  const { getConcept } = useConcepts();
   const s = useStyles(makeStyles);
-  const concept = CONCEPTS[conceptId];
+  const concept = getConcept(conceptId);
   if (!concept) return null;
 
   const clampedX =
@@ -27,16 +28,37 @@ function ConceptTooltip({
       ? Math.min(y + 8, window.innerHeight - 200)
       : y + 8;
 
+  const isPolicy = concept.kind === "policy";
+
   return (
     <View
-      style={[s.tooltip, { top: clampedY, left: clampedX }]}
+      style={[s.tooltip, isPolicy && s.policyTooltip, { top: clampedY, left: clampedX }]}
       {...({
         onMouseEnter: () => onEnterTooltip(depth),
+        onMouseMove: () => keepAlive(),
         onMouseLeave: () => onLeaveTooltip(depth),
       } as any)}
     >
-      <Text style={s.name}>{concept.name}</Text>
-      <ConceptText text={concept.explanation} style={s.body} depth={depth + 1} />
+      {isPolicy ? (
+        <>
+          {!!concept.icon && <Text style={s.policyIcon}>{concept.icon}</Text>}
+          <Text style={s.policyName}>{concept.name}</Text>
+          {!!concept.categoryName && (
+            <Text style={[s.policyTag, { color: concept.categoryColor }]}>{concept.categoryName}</Text>
+          )}
+          {!!concept.description && (
+            <ConceptText text={concept.description} style={s.body} depth={depth + 1} />
+          )}
+          {!!concept.currentOptionName && (
+            <Text style={s.policyOption}>{concept.currentOptionName}</Text>
+          )}
+        </>
+      ) : (
+        <>
+          <Text style={s.name}>{concept.name}</Text>
+          <ConceptText text={concept.description} style={s.body} depth={depth + 1} />
+        </>
+      )}
     </View>
   );
 }

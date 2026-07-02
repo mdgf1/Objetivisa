@@ -1,14 +1,11 @@
-import { ScrollView, View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { usePolicies } from "../hooks/usePolicies";
-import PolicyGroupCard from "../components/PolicyGroupCard";
-import makeStyles from "../styles/VisionScreen.styles";
-import { useStyles } from "../hooks/useStyles";
+import Parliament from "../components/Parliament";
 import { useTheme } from "../contexts/ThemeContext";
 
 export default function VisionScreen() {
-  const { categories, parties, loading, error } = usePolicies();
+  const { categories, loading, error } = usePolicies();
   const { colors } = useTheme();
-  const s = useStyles(makeStyles);
 
   if (loading) {
     return (
@@ -27,17 +24,8 @@ export default function VisionScreen() {
   }
 
   return (
-    <ScrollView style={s.scroll}>
-      <View style={s.columns}>
-        {categories.map((cat) => (
-          <View key={cat.id} style={s.column}>
-            <Text style={s.categoryHeader}>{cat.name}</Text>
-            {cat.groups.map((group) => (
-              <PolicyGroupCard key={group.id} group={group} parties={parties} />
-            ))}
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <Parliament categories={categories} />
+    </View>
   );
 }

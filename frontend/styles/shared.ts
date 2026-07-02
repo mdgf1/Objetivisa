@@ -8,8 +8,8 @@ export const lightColors = {
   textSecondary: "#5a5044",
   textMuted: "#9c9080",
   textCard: "#2c2418",
-  accent: "#c0392b",
-  accentText: "#c0392b",
+  accent: "#8b1a1a",
+  accentText: "#8b1a1a",
 };
 
 export const darkColors = {
@@ -20,8 +20,8 @@ export const darkColors = {
   textSecondary: "#94a3b8",
   textMuted: "#475569",
   textCard: "#e2e8f0",
-  accent: "#dc2626",
-  accentText: "#f87171",
+  accent: "#8b1a1a",
+  accentText: "#ef4444",
 };
 
 // kept for any legacy direct import — resolves to light

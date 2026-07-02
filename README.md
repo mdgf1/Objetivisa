@@ -24,7 +24,7 @@ docker compose --profile dev down
 ## Base de dados
 
 ### Guardar dados
-Com os containers a correr, exporta todos os dados para `db/seed.sql`:
+Com os containers a correr, exporta todos os dados para `scripts/db/seed.sql`:
 ```bash
 ./scripts/dump.sh
 ```

@@ -1,11 +1,12 @@
 import { Text } from "react-native";
 import { useTooltipContext } from "../contexts/TooltipContext";
 import { useTheme } from "../contexts/ThemeContext";
-import { CONCEPTS } from "../data_types/concepts";
+import { useConcepts } from "../contexts/ConceptsContext";
+import { useConceptPanel } from "../contexts/ConceptPanelContext";
 
 type Segment =
   | { type: "text"; content: string }
-  | { type: "concept"; id: string; display: string };
+  | { type: "concept"; id: string; display: string | null };
 
 function parse(text: string): Segment[] {
   const segments: Segment[] = [];
@@ -14,9 +15,7 @@ function parse(text: string): Segment[] {
   let m: RegExpExecArray | null;
   while ((m = regex.exec(text)) !== null) {
     if (m.index > last) segments.push({ type: "text", content: text.slice(last, m.index) });
-    const id = m[1];
-    const display = m[2] ?? CONCEPTS[id]?.name ?? id;
-    segments.push({ type: "concept", id, display });
+    segments.push({ type: "concept", id: m[1], display: m[2] ?? null });
     last = m.index + m[0].length;
   }
   if (last < text.length) segments.push({ type: "text", content: text.slice(last) });
@@ -32,6 +31,8 @@ type Props = {
 
 export function ConceptText({ text, style, depth }: Props) {
   const { openTooltip, onLeaveTooltip } = useTooltipContext();
+  const { getConcept } = useConcepts();
+  const { openConcept } = useConceptPanel();
   const { colors } = useTheme();
   const segments = parse(text);
 
@@ -39,18 +40,23 @@ export function ConceptText({ text, style, depth }: Props) {
     <Text style={style}>
       {segments.map((seg, i) => {
         if (seg.type === "text") return seg.content;
-        if (!CONCEPTS[seg.id]) return <Text key={i}>{seg.display}</Text>;
+        const concept = getConcept(seg.id);
+        const display = seg.display ?? concept?.name ?? seg.id;
+        // unknown concept (not in the backend map): render as plain text
+        if (!concept) return <Text key={i}>{display}</Text>;
         return (
           <Text
             key={i}
-            style={{ color: colors.accent, fontWeight: "600" }}
+            style={{ color: colors.accent, fontWeight: "600", cursor: "pointer" } as any}
             {...({
+              dataSet: { conceptId: seg.id },
               onMouseEnter: (e: any) =>
                 openTooltip(seg.id, e.nativeEvent.clientX, e.nativeEvent.clientY, depth),
               onMouseLeave: () => onLeaveTooltip(depth),
+              onClick: () => openConcept(seg.id),
             } as any)}
           >
-            {seg.display}
+            {display}
           </Text>
         );
       })}

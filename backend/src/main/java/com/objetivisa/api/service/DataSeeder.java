@@ -1,6 +1,7 @@
 package com.objetivisa.api.service;
 
-import com.objetivisa.api.repository.*;
+import com.objetivisa.api.repository.party.*;
+import com.objetivisa.api.repository.policy.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,6 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Data is managed via db/seed.sql (scripts/dump.sh / scripts/restore.sh)
+        // Data is managed via scripts/db/seed.sql (scripts/dump.sh / scripts/restore.sh)
     }
 }

@@ -32,4 +32,32 @@ export default (c: Colors) =>
     link: {
       fontWeight: "600",
     },
+
+    // richer card used when the concept is a policy group (centred, with icon + tag)
+    policyTooltip: {
+      alignItems: "center",
+    },
+    policyIcon: { fontSize: 32, marginBottom: 4 },
+    policyName: {
+      color: c.textPrimary,
+      fontWeight: "700",
+      fontSize: 15,
+      textAlign: "center",
+    },
+    policyTag: {
+      fontSize: 10,
+      fontWeight: "700",
+      letterSpacing: 1,
+      textTransform: "uppercase",
+      marginTop: 4,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    policyOption: {
+      color: c.textMuted,
+      fontSize: 12,
+      marginTop: 8,
+      fontStyle: "italic",
+      textAlign: "center",
+    },
   });
